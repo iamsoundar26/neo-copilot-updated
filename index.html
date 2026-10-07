@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Billing · File upload · AI Accountant</title>
+<style>
+:root{--nav:#1c2340;--primary:#1f4fd8;--bg:#fff;--fg:#1a1d29;--muted:#5d6475;--border:#e3e6ee;--soft:#f4f6fa;--link:#1f4fd8;--ok:#1b8a5a;--okbg:#e3f5ec;--warn:#8a5a00;--warnbg:#fdeacc;--tint:#e4eafd}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:"Open Sans",system-ui,-apple-system,sans-serif;font-size:14px;color:var(--fg);background:var(--bg)}
+button{font:inherit;color:inherit}
+/* fixed top navigation */
+.top{position:fixed;top:0;left:0;right:0;height:50px;background:var(--nav);color:#fff;display:flex;align-items:center;padding:0 16px;gap:14px;z-index:30}
+.logo{display:flex;align-items:center;gap:8px;font-size:14px}.logo b{width:22px;height:22px;background:#fff;color:var(--nav);border-radius:6px;display:grid;place-items:center;font-size:13px}
+.sp{flex:1}.pill{border:1px solid #ffffff40;border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:8px}
+.pill i{width:18px;height:18px;border-radius:5px;background:#27b27a;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700}
+.av{width:30px;height:30px;border-radius:50%;background:#e8ebf5;color:var(--nav);display:grid;place-items:center;font-weight:600;font-size:13px}
+.neo-top{display:flex;align-items:center;gap:8px;background:var(--primary);border:0;color:#fff;border-radius:8px;padding:6px 10px 6px 8px;cursor:pointer;font-weight:600;position:relative}
+.neo-top:hover{background:#2f5ee6}
+.neo-top b{width:20px;height:20px;border-radius:6px;background:#ffffff2b;display:grid;place-items:center;font-size:11px}
+.neo-top kbd{font:inherit;font-size:10px;font-weight:600;background:#ffffff2b;border-radius:4px;padding:1px 5px}
+.cnt-b{display:none;min-width:18px;height:18px;border-radius:9px;background:#fff;color:var(--primary);font-size:11px;font-weight:700;align-items:center;justify-content:center;padding:0 5px}
+.cnt-b.on{display:inline-flex}
+.wrap{position:fixed;top:50px;left:0;right:0;bottom:0;display:flex}
+.side{width:200px;border-right:1px solid var(--border);padding:12px;flex:none;overflow:auto}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--muted);text-decoration:none;margin-bottom:2px}
+.side a.on{background:var(--soft);color:var(--fg);font-weight:600}
+.side hr{border:0;border-top:1px solid var(--border);margin:12px 8px}
+.new{margin-left:auto;font-size:10px;font-weight:700;color:var(--primary);background:var(--tint);padding:2px 8px;border-radius:4px}
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+.head{padding:16px 24px 0;display:flex;align-items:center;gap:10px}
+.crumb{font-size:12px;color:var(--muted);padding:14px 24px 0}.crumb b{color:var(--fg);font-weight:600}
+h1{font-size:20px;font-weight:600;margin:0;flex:1}
+.btn{background:var(--primary);color:#fff;border:0;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--fg);border:1px solid var(--border)}
+.tabs{display:flex;gap:28px;padding:0 24px;margin-top:16px;border-bottom:1px solid var(--border)}
+.tab{padding:10px 0;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;display:flex;gap:8px;align-items:center}
+.tab.on{color:var(--primary);font-weight:600;border-color:var(--primary)}
+.tab span{background:var(--tint);color:#3a4a8a;font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px}
+.bar{display:flex;gap:10px;padding:12px 24px;align-items:center}
+.bar input{width:198px;padding:9px 12px;border:1px solid var(--primary);border-radius:6px;font:inherit}
+.chip{border:1px solid var(--border);background:#fff;border-radius:6px;padding:7px 12px;font-size:13px}
+.tw{flex:1;overflow:auto;border-top:1px solid var(--border);min-height:0}
+table{border-collapse:collapse;width:100%;min-width:900px}
+th{position:sticky;top:0;background:#fff;text-align:left;font-weight:600;font-size:13px;padding:12px 10px;border-bottom:1px solid var(--border);white-space:nowrap;z-index:1}
+td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;white-space:nowrap;max-width:210px;overflow:hidden;text-overflow:ellipsis}
+td.f a{color:var(--link);text-decoration:none;display:block;overflow:hidden;text-overflow:ellipsis;max-width:150px}td.f small{color:var(--muted);font-size:11px}
+td.f{display:flex;gap:10px;align-items:center;max-width:none}td.f .pdf{width:26px;height:30px;border:1px solid var(--border);border-radius:4px;color:#c62828;font-size:9px;display:grid;place-items:center;font-weight:700;flex:none}
+.st{background:#e8ecf6;border-radius:5px;padding:3px 10px;font-size:11px}.st.d{background:var(--warnbg);color:var(--warn)}.st.ok{background:var(--okbg);color:var(--ok)}.st.p{background:var(--tint);color:var(--primary)}
+.am small{color:var(--muted);font-size:11px}.am{text-align:right}th.am{text-align:right}
+.ago{display:block;color:var(--muted);font-size:11px}
+.empty-t{text-align:center;color:var(--muted);padding:48px 0}
+/* pagination (pinned footer) */
+.foot{flex:none;display:flex;align-items:center;gap:16px;padding:10px 24px;border-top:1px solid var(--border);color:var(--muted);background:#fff}
+.foot select{padding:6px 8px;border:1px solid var(--border);border-radius:6px;font:inherit;color:var(--fg)}
+.pg{display:flex;align-items:center;gap:6px}
+.pg button{width:30px;height:30px;border:1px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;font-size:14px;line-height:1}
+.pg button:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}.pg button:disabled{opacity:.4;cursor:default}
+tr.fresh td{animation:fresh 2.4s ease-out}
+@keyframes fresh{0%,40%{background:#eef2ff}100%{background:transparent}}
+
+/* floating widget */
+.fab{position:fixed;right:24px;bottom:24px;width:56px;height:56px;border-radius:50%;border:0;background:var(--primary);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 20px #1f4fd859;z-index:20;display:grid;place-items:center;transition:transform .15s}
+.fab:hover{transform:scale(1.06)}
+.fab .cnt-b{position:absolute;top:-4px;right:-4px;background:#e5484d;color:#fff;border:2px solid #fff}
+body.cp-open .fab{display:none}
+
+/* ===== Copilot panel: fixed overlay, page never reflows ===== */
+#cp{position:fixed;top:50px;right:0;bottom:0;width:430px;max-width:100%;background:#fff;border-left:1px solid var(--border);box-shadow:-8px 0 28px #1c234026;z-index:25;transform:translateX(105%);transition:transform .28s ease;display:flex;flex-direction:column}
+body.cp-open #cp{transform:none}
+.cp-h{flex:none;display:flex;align-items:center;gap:10px;padding:10px 12px 10px 18px;border-bottom:1px solid var(--border);background:#fff}
+.cp-h .nbadge{width:26px;height:26px;border-radius:8px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px}
+.ttl{flex:1;min-width:0}.ttl h2{font-size:14px;font-weight:600;margin:0}
+.ctx{font-size:11px;color:var(--muted);white-space:nowrap}.ctx b{color:var(--fg);font-weight:600}
+.beta{font-size:11px;font-weight:600;color:var(--primary);background:var(--tint);padding:3px 10px;border-radius:999px}
+.ib{width:30px;height:30px;border-radius:8px;border:0;background:none;cursor:pointer;display:grid;place-items:center;color:var(--muted);font-size:16px;flex:none}.ib:hover{background:var(--soft);color:var(--fg)}
+#bg{flex:none;display:none;align-items:center;gap:10px;padding:8px 18px;background:#f3f6ff;border-bottom:1px solid var(--border);font-size:12px;color:#2a3b86}
+#bg.on{display:flex}
+.spin{width:12px;height:12px;border:2px solid var(--primary);border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cp-body{flex:1;min-height:0;overflow-y:auto;padding:16px 18px 8px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain}
+.cp-wrap{flex:1;min-height:0;position:relative;display:flex;flex-direction:column}
+.jump{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--fg);color:#fff;border:0;border-radius:999px;padding:6px 14px;font-size:12px;cursor:pointer;display:none;box-shadow:0 4px 14px #0003}
+.jump.on{display:block}
+/* empty state */
+.hello{margin:auto 0;text-align:center;padding:0 6px}
+.hello .big{width:48px;height:48px;border-radius:14px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:22px;margin:0 auto 14px}
+.hello h3{margin:0 0 6px;font-size:18px;font-weight:600}.hello p{margin:0 auto 18px;color:var(--muted);max-width:310px;line-height:1.5}
+.cards{display:flex;flex-direction:column;gap:8px;text-align:left}
+.cards button{border:1px solid var(--border);background:#fff;border-radius:12px;padding:11px 14px;cursor:pointer;display:flex;gap:12px;align-items:center;text-align:left}
+.cards button:hover{border-color:var(--primary);background:#f7f9ff}
+.cards i{font-style:normal;width:30px;height:30px;border-radius:8px;background:var(--tint);color:var(--primary);display:grid;place-items:center;flex:none}
+.cards b{display:block;font-size:13px}.cards small{color:var(--muted);font-size:12px}
+.disc{font-size:11px;color:var(--muted);line-height:1.5;text-align:center;padding:2px 0 0}
+.msg{line-height:1.55;animation:in .25s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.u{align-self:flex-end;background:var(--soft);padding:10px 14px;border-radius:16px;max-width:88%;white-space:pre-wrap}
+.msg.n p{margin:0 0 8px}.msg.n p:last-child{margin:0}
+.msg.n ul{margin:4px 0 8px;padding-left:18px}.msg.n li{margin:2px 0}
+.typing{display:flex;gap:4px;padding:6px 0}.typing i{width:6px;height:6px;border-radius:50%;background:#aab2c8;animation:bl 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.fchip{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;padding:7px 11px;background:#fff;min-width:0}
+.fchip .pdf{width:24px;height:30px;border:1px solid var(--border);border-radius:4px;color:#c62828;font-size:9px;display:grid;place-items:center;font-weight:700;flex:none}
+.fchip div{min-width:0}.fchip b{display:block;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fchip small{color:var(--muted);font-size:11px}
+.ufiles{align-self:flex-end;display:flex;flex-direction:column;gap:6px;max-width:88%;animation:in .25s ease-out}
+/* job + result */
+.job{border:1px solid var(--border);border-radius:12px;padding:11px 12px;display:flex;gap:10px;align-items:center;animation:in .25s ease-out}
+.job .pdf{width:26px;height:32px;border:1px solid var(--border);border-radius:4px;color:#c62828;font-size:9px;display:grid;place-items:center;font-weight:700;flex:none}
+.jm{flex:1;min-width:0}.jm b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jm small{color:var(--muted);font-size:12px}
+.pbar{height:4px;background:var(--soft);border-radius:2px;margin-top:6px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--primary);border-radius:2px;transition:width .5s ease}
+.card{border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:in .3s ease-out}
+.card-h{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--soft);font-size:12px;font-weight:600;color:var(--muted)}
+.card-h .sp{flex:1}
+.conf{font-weight:600;font-size:11px;background:var(--okbg);color:var(--ok);padding:2px 8px;border-radius:999px}
+.conf.w{background:var(--warnbg);color:var(--warn)}
+.card-b{padding:12px 14px}
+.vrow{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.vend{font-size:14px;font-weight:600}.sub{color:var(--muted);font-size:12px;margin-top:2px}
+.amt{font-size:15px;font-weight:700;white-space:nowrap}
+.sum{margin-top:8px;font-size:12px;color:var(--muted)}.sum .t{color:var(--ok);font-weight:700}.sum .w{color:var(--warn);font-weight:700}
+.more{margin-top:8px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin:10px 0}
+.kv label{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.kv div{font-size:13px;font-weight:600}
+.kv input{width:100%;padding:6px 8px;border:1px solid var(--primary);border-radius:6px;font:inherit;font-size:13px}
+.lines{width:100%;min-width:0;font-size:12px}
+.lines th{position:static;font-size:11px;color:var(--muted);padding:6px 4px;font-weight:600}
+.lines td{padding:6px 4px;font-size:12px;white-space:normal;max-width:none}.lines .r{text-align:right}
+.tot{margin-top:8px;border-top:1px solid var(--border);padding-top:8px;font-size:12px}
+.tot div{display:flex;justify-content:space-between;padding:2px 4px;color:var(--muted)}
+.tot .g{color:var(--fg);font-weight:700;font-size:14px;padding-top:6px}
+.checks{margin:12px 0 0;padding:10px 12px;background:#fafbfd;border:1px solid var(--border);border-radius:10px;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:12px}
+.checks li{display:flex;gap:8px;align-items:flex-start}.checks .t{color:var(--ok);font-weight:700}.checks .w{color:var(--warn);font-weight:700}
+.link{background:none;border:0;color:var(--primary);cursor:pointer;padding:0;font-size:12px;font-weight:600}
+.acts{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border)}
+.acts .btn{flex:1;padding:8px 10px;font-size:13px}
+.okline{display:flex;gap:10px;align-items:center;background:var(--okbg);color:#14633f;padding:10px 14px;font-size:13px;font-weight:600;border-top:1px solid var(--border)}
+.wline{background:var(--warnbg);color:var(--warn)}
+.sug{display:flex;flex-wrap:wrap;gap:8px}
+.sug button{border:1px solid var(--border);background:#fff;border-radius:999px;padding:7px 12px;font-size:13px;cursor:pointer}.sug button:hover{border-color:var(--primary);color:var(--primary)}
+/* composer */
+.cp-f{flex:none;padding:8px 16px 14px;background:#fff}
+.box{border:1px solid var(--border);border-radius:18px;padding:8px 10px;box-shadow:0 2px 8px #1c23400d;transition:border-color .15s}
+.box:focus-within{border-color:var(--primary)}
+.att{display:flex;flex-wrap:wrap;gap:6px;padding:2px 2px 8px}
+.att .fchip{padding:5px 8px 5px 10px}.att .x{border:0;background:none;cursor:pointer;color:var(--muted);font-size:14px;padding:0 2px}
+.row{display:flex;align-items:flex-end;gap:6px}
+.row textarea{flex:1;border:0;outline:0;resize:none;font:inherit;line-height:1.45;padding:7px 4px;max-height:140px;min-width:0;background:none}
+.send{width:32px;height:32px;border-radius:50%;border:0;background:var(--primary);color:#fff;cursor:pointer;flex:none;font-size:15px}
+.send:disabled{background:var(--soft);color:#9aa1b4;cursor:default}
+.hint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px}
+.dz{position:absolute;inset:0;background:#eef2ffe8;border:2px dashed var(--primary);border-radius:8px;display:none;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--primary);font-weight:600;z-index:5;margin:8px}
+.dz.on{display:flex}.dz span{font-size:12px;font-weight:400;color:var(--muted)}
+@media(max-width:800px){.side{display:none}.neo-top kbd,.neo-top span.lbl{display:none}}
+</style></head><body>
+<header class="top"><div class="logo"><b>A</b>AI Accountant</div><div class="sp"></div>
+<div class="pill"><i>S</i>Shakunthalam Oil &amp; Refineries ▾</div><div class="pill">⟳ Sync</div>
+<button class="neo-top" id="neoTop" title="Open Neo (Ctrl J)"><b>✦</b><span class="lbl">Ask Neo</span><kbd>Ctrl J</kbd><span class="cnt-b" id="topCnt"></span></button><div>Guide</div><div class="av">SB</div></header>
+
+<div class="wrap"><nav class="side">
+<a href="#">Dashboard</a><a href="#" class="on">Billing <span class="new">✦ NEW</span></a><a href="#">Purchases</a><a href="#">Sales</a><a href="#">Banking</a><a href="#">Accounting</a><a href="#">Inventory</a><hr><a href="#">GST</a><a href="#">Sync Management</a></nav>
+<main><div class="crumb">Billing › <b>File upload</b></div>
+<div class="head"><h1>File upload</h1><button class="btn" id="upBtn">⇪ Upload Documents</button></div>
+<div class="tabs" id="tabs"></div>
+<div class="bar"><input id="q" placeholder="Search..."><span class="chip">Source ▾</span><span class="chip">Voucher type ▾</span><span class="chip">Received ▾</span><span class="sp" style="flex:1"></span><span class="chip">Columns</span></div>
+<div class="tw"><table><thead><tr><th><input type="checkbox" id="all"></th><th>File</th><th>Vendor</th><th>Voucher type</th><th>GST Registration</th><th class="am">Amount</th><th>Status</th><th>Source</th><th>User</th><th>Received</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="foot"><span>Rows per page</span><select id="per"><option>10</option><option>25</option><option>50</option></select><span class="sp"></span><span id="cnt"></span>
+<div class="pg"><button id="prev" aria-label="Previous page">‹</button><span id="pgn"></span><button id="next" aria-label="Next page">›</button></div></div></main></div>
+
+<button class="fab" id="fab" title="Ask Neo (Ctrl J)" aria-label="Open Neo">✦<span class="cnt-b" id="fabCnt"></span></button>
+
+<aside id="cp" aria-label="Neo copilot">
+ <div class="cp-h"><span class="nbadge">✦</span><div class="ttl"><h2>Neo</h2><div class="ctx">Context · <b>Billing › File upload</b></div></div><span class="beta">Beta</span><button class="ib" id="newChat" title="New chat">⊕</button><button class="ib" id="closeNeo" title="Close">✕</button></div>
+ <div id="bg"><span class="spin"></span><span id="bgt"></span></div>
+ <div class="cp-wrap" id="drop"><div class="cp-body" id="chat"></div><button class="jump" id="jump">↓ New activity</button>
+  <div class="dz" id="dz">Drop files to upload<span>PDF, JPG or PNG · up to 10 MB each</span></div></div>
+ <div class="cp-f"><div class="box"><div class="att" id="att" hidden></div>
+  <div class="row"><button class="ib" id="plus" title="Attach files">＋</button><textarea id="msg" rows="1" placeholder="Message Neo, or attach invoices to upload"></textarea><button class="send" id="send" disabled aria-label="Send">↑</button></div></div>
+  <div class="hint">Neo can make mistakes. Review extracted details before approving.</div></div>
+</aside>
+<input type="file" id="file" accept=".pdf,.png,.jpg,.jpeg" multiple hidden>
+
+<script>
+/* ---------- table data ---------- */
+const NEED=[{"file":"Dell India Pvt Ltd · INV-1182.pdf","size":"412 KB","vendor":"Dell India Pvt Ltd","type":"Purchase","amt":"88,085","paise":"20","user":"Arjun M.","date":"7 Oct 2026, 9:01 am","ago":"16m ago","status":"Needs Review"},{"file":"AWS-services-may-2026.pdf","size":"1.2 MB","vendor":"Amazon Web Services India","type":"Purchase","amt":"2,18,904","paise":"10","user":"Priya R.","date":"6 Oct 2026, 6:05 pm","ago":"15h ago","status":"Needs Review"},{"file":"Theta-Hotels — INV-2214.pdf","size":"112 KB","vendor":"Theta Hotels Pvt Ltd","type":"Sales","amt":"4,86,832","paise":"00","user":"Ramesh K.","date":"6 Oct 2026, 2:17 pm","ago":"19h ago","status":"Needs Review"},{"file":"Nandini-Foods — INV-2215.pdf","size":"96 KB","vendor":"Nandini Foods LLP","type":"Sales","amt":"1,54,816","paise":"00","user":"Divya S.","date":"6 Oct 2026, 10:29 am","ago":"22h ago","status":"Needs Review"},{"file":"Depreciation-adjustment-Q1.pdf","size":"98 KB","vendor":"General counterparty","type":"Journal","amt":"1,84,500","paise":"00","user":"Arjun M.","date":"6 Oct 2026, 6:41 am","ago":"1d ago","status":"Needs Review"},{"file":"Petty-cash-recon-Apr.pdf","size":"210 KB","vendor":"Multiple","type":"—","amt":"18,420","paise":"00","user":"Priya R.","date":"6 Oct 2026, 2:53 am","ago":"1d ago","status":"Needs Review"},{"file":"Orion-Tech — INV-9911.pdf","size":"388 KB","vendor":"Orion Technologies","type":"Purchase","amt":"28,400","paise":"00","user":"Ramesh K.","date":"5 Oct 2026, 11:05 pm","ago":"1d ago","status":"Needs Review"},{"file":"Nova-Logistics — May-freight.pdf","size":"412 KB","vendor":"Nova Logistics","type":"Purchase","amt":"54,860","paise":"00","user":"Divya S.","date":"5 Oct 2026, 7:17 pm","ago":"1d ago","status":"Needs Review"},{"file":"Pulse-Media — Q1 retainer.pdf","size":"276 KB","vendor":"Pulse Media Group","type":"Purchase","amt":"1,23,999","paise":"99","user":"Arjun M.","date":"5 Oct 2026, 3:29 pm","ago":"1d ago","status":"Needs Review"},{"file":"Vortex-Cleaning — May.pdf","size":"118 KB","vendor":"Vortex Cleaning Services","type":"Purchase","amt":"18,449","paise":"99","user":"Priya R.","date":"5 Oct 2026, 11:41 am","ago":"1d ago","status":"Needs Review"},{"file":"Cinder-Fuel — May 14.pdf","size":"224 KB","vendor":"Cinder Fuel Stations","type":"Purchase","amt":"9,840","paise":"00","user":"Ramesh K.","date":"5 Oct 2026, 7:53 am","ago":"2d ago","status":"Needs Review"},{"file":"Zeta-Services-Apr.pdf","size":"172 KB","vendor":"Zeta Services LLP","type":"Purchase","amt":"12,600","paise":"00","user":"Divya S.","date":"5 Oct 2026, 4:05 am","ago":"2d ago","status":"Needs Review"},{"file":"Theta-Hotels — INV-2208.pdf","size":"108 KB","vendor":"Theta Hotels Pvt Ltd","type":"Sales","amt":"2,82,492","paise":"00","user":"Arjun M.","date":"5 Oct 2026, 12:17 am","ago":"2d ago","status":"Needs Review"},{"file":"Pegasus-Logistics — INV-7702.pdf","size":"320 KB","vendor":"Pegasus Logistics Pvt Ltd","type":"Purchase","amt":"88,500","paise":"00","user":"Priya R.","date":"4 Oct 2026, 8:29 pm","ago":"2d ago","status":"Needs Review"},{"file":"Rebill-Rentyx-Mar.pdf","size":"164 KB","vendor":"General counterparty","type":"Journal","amt":"41,200","paise":"00","user":"Ramesh K.","date":"4 Oct 2026, 4:41 pm","ago":"2d ago","status":"Needs Review"}];
+const DUP=[{"file":"Dell India Pvt Ltd · INV-1182.pdf","size":"412 KB","vendor":"Dell India Pvt Ltd","type":"Purchase","amt":"88,085","paise":"20","user":"Arjun M.","date":"7 Oct 2026, 9:01 am","ago":"16m ago","status":"Duplicate"},{"file":"Theta-Hotels — INV-2214.pdf","size":"112 KB","vendor":"Theta Hotels Pvt Ltd","type":"Sales","amt":"4,86,832","paise":"00","user":"Ramesh K.","date":"6 Oct 2026, 2:17 pm","ago":"19h ago","status":"Duplicate"},{"file":"Orion-Tech — INV-9911.pdf","size":"388 KB","vendor":"Orion Technologies","type":"Purchase","amt":"28,400","paise":"00","user":"Ramesh K.","date":"5 Oct 2026, 11:05 pm","ago":"1d ago","status":"Duplicate"}];
+const APP=[], PROC=[];
+const labels={all:"All",review:"Need review",approved:"Approved",duplicate:"Duplicate"};
+const sets=()=>({all:[...PROC,...NEED,...APP,...DUP],review:[...PROC,...NEED],approved:APP,duplicate:DUP});
+const S={tab:"review",q:"",page:1,per:10};let freshId=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const stCls=s=>s=="Duplicate"?"d":s=="Approved"?"ok":s.startsWith("Processing")?"p":"";
+function render(){
+ const all=sets();
+ $("tabs").innerHTML=Object.keys(labels).map(k=>`<button class="tab ${k==S.tab?"on":""}" data-k="${k}">${labels[k]} <span>${all[k].length}</span></button>`).join("");
+ const list=all[S.tab].filter(r=>(r.file+r.vendor).toLowerCase().includes(S.q));
+ const pages=Math.max(1,Math.ceil(list.length/S.per));S.page=Math.min(S.page,pages);
+ const from=(S.page-1)*S.per,vis=list.slice(from,from+S.per);
+ $("rows").innerHTML=vis.length?vis.map(r=>`<tr class="${r.id&&r.id===freshId?"fresh":""}"><td><input type="checkbox"></td>
+ <td class="f"><div class="pdf">PDF</div><div><a href="#">${esc(r.file)}</a><small>${r.size}</small></div></td>
+ <td title="${esc(r.vendor)}">${esc(r.vendor)}</td><td>${r.type}</td><td>${r.gst||"Karnataka HQ"}</td>
+ <td class="am">${r.amt?`₹${r.amt}<small>.${r.paise}</small>`:"—"}</td><td><span class="st ${stCls(r.status)}">${r.status} ▾</span></td>
+ <td>${r.src||"WhatsApp"}</td><td>${r.user}</td><td>${r.date}<span class="ago">${r.ago}</span></td><td>⋮</td></tr>`).join(""):`<tr><td colspan="11" class="empty-t">No documents here yet</td></tr>`;
+ $("cnt").textContent=list.length?`${from+1}–${from+vis.length} of ${list.length}`:"0 of 0";
+ $("pgn").textContent=`Page ${S.page} of ${pages}`;$("prev").disabled=S.page<=1;$("next").disabled=S.page>=pages;
+}
+$("tabs").onclick=e=>{const b=e.target.closest(".tab");if(b){S.tab=b.dataset.k;S.page=1;render()}};
+$("q").oninput=e=>{S.q=e.target.value.toLowerCase();S.page=1;render()};
+$("per").onchange=e=>{S.per=+e.target.value;S.page=1;render()};
+$("prev").onclick=()=>{S.page--;render()};$("next").onclick=()=>{S.page++;render()};
+$("all").onchange=e=>document.querySelectorAll("#rows input").forEach(c=>c.checked=e.target.checked);
+
+/* ---------- helpers ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const inr=n=>n.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
+const sizeStr=b=>b>1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB";
+const nowStr=()=>new Date().toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"numeric",minute:"2-digit",hour12:true}).replace(" at",",").replace(/\b(am|pm)\b/i,m=>m.toLowerCase());
+const chat=$("chat");let stick=true;
+const near=()=>chat.scrollHeight-chat.scrollTop-chat.clientHeight<90;
+chat.onscroll=()=>{if(near())$("jump").classList.remove("on")};
+$("jump").onclick=()=>{chat.scrollTo({top:chat.scrollHeight,behavior:"smooth"});$("jump").classList.remove("on")};
+function add(html,cls="",force=false){
+ const n=near()||force;const d=document.createElement("div");d.className=cls;d.innerHTML=html;
+ const e=$("hello");if(e)e.remove();
+ chat.appendChild(d);
+ if(n)chat.scrollTop=chat.scrollHeight;else $("jump").classList.add("on");return d}
+const neo=h=>add(h,"msg n");
+const fchip=f=>`<div class="fchip"><div class="pdf">PDF</div><div><b>${esc(f.name)}</b><small>${f.size}</small></div></div>`;
+function chips(list){const s=add(list.map(([l])=>`<button>${esc(l)}</button>`).join(""),"sug");
+ s.onclick=e=>{const i=[...s.children].indexOf(e.target);if(i<0)return;s.remove();list[i][1]()};return s}
+async function reply(html,after){const t=add(`<div class="typing"><i></i><i></i><i></i></div>`,"msg n");await sleep(550);t.remove();const m=neo(html);if(after)after(m)}
+
+/* ---------- panel open / close ---------- */
+function setOpen(v){document.body.classList.toggle("cp-open",v);if(v){if(!chat.children.length)welcome();setTimeout(()=>{$("msg").focus();chat.scrollTop=chat.scrollHeight},280)}}
+const toggle=()=>setOpen(!document.body.classList.contains("cp-open"));
+$("fab").onclick=()=>setOpen(true);$("neoTop").onclick=toggle;$("closeNeo").onclick=()=>setOpen(false);
+$("upBtn").onclick=()=>{setOpen(true);setTimeout(()=>$("file").click(),300)};
+addEventListener("keydown",e=>{if(e.ctrlKey&&e.key.toLowerCase()==="j"){e.preventDefault();toggle()}if(e.key==="Escape"&&document.body.classList.contains("cp-open")&&document.activeElement===document.body)setOpen(false)});
+$("newChat").onclick=()=>{chat.innerHTML="";staged.length=0;drawAtt();welcome()};
+
+function welcome(){
+ add(`<div class="big">✦</div><h3>How can I help with your billing files?</h3><p>Upload invoices or bills and I'll process them in the background. You can keep chatting while I work.</p>
+ <div class="cards"><button data-k="up"><i>⇪</i><div><b>Upload invoices or bills</b><small>PDF, JPG or PNG. Attach several at once</small></div></button>
+ <button data-k="sample"><i>✦</i><div><b>Try with 3 sample invoices</b><small>See the full flow without a real file</small></div></button>
+ <button data-k="attn"><i>!</i><div><b>What needs my attention?</b><small>Waiting, blocked and duplicate documents</small></div></button>
+ <button data-k="dup"><i>⧉</i><div><b>Find duplicates</b><small>Certain matches, with Delete or Keep</small></div></button>
+ <button data-k="exp"><i>?</i><div><b>Explain a flagged document</b><small>Why it's flagged and what to do next</small></div></button>
+ <button data-k="msg"><i>✉</i><div><b>Draft a message to a vendor</b><small>Ask for a GSTIN or a clearer copy</small></div></button></div>`,"hello");
+ const h=chat.lastElementChild;h.id="hello";
+ h.onclick=e=>{
+  const k=e.target.closest("button")?.dataset.k;if(!k)return;
+  if(k==="up")$("file").click();if(k==="sample")uploadSamples();
+  const t={attn:"What needs my attention?",dup:"Find duplicates",exp:"Explain a flagged document",msg:"Draft a message to a vendor"}[k];
+  if(t)say(t)};
+}
+
+/* ---------- composer (attach + chat) ---------- */
+const staged=[];
+function drawAtt(){const a=$("att");a.hidden=!staged.length;
+ a.innerHTML=staged.map((f,i)=>`<div class="fchip"><div class="pdf">PDF</div><div><b>${esc(f.name)}</b><small>${f.size}</small></div><button class="x" data-i="${i}" aria-label="Remove">✕</button></div>`).join("");
+ $("send").disabled=!staged.length&&!$("msg").value.trim()}
+$("att").onclick=e=>{const i=e.target.dataset.i;if(i!==undefined){staged.splice(+i,1);drawAtt()}};
+function stage(files){[...files].forEach(f=>{if(f.size>10*1048576){return}staged.push({name:f.name,size:sizeStr(f.size)})});drawAtt();$("msg").focus()}
+$("plus").onclick=()=>$("file").click();
+$("file").onchange=e=>{stage(e.target.files);e.target.value=""};
+$("msg").oninput=e=>{const t=e.target;t.style.height="auto";t.style.height=Math.min(t.scrollHeight,140)+"px";drawAtt()};
+$("msg").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();submit()}};
+$("send").onclick=submit;
+["dragenter","dragover"].forEach(ev=>$("cp").addEventListener(ev,e=>{if([...e.dataTransfer.types].includes("Files")){e.preventDefault();$("dz").classList.add("on")}}));
+$("dz").ondragleave=()=>$("dz").classList.remove("on");
+$("dz").ondrop=e=>{e.preventDefault();$("dz").classList.remove("on");stage(e.dataTransfer.files)};
+
+function submit(){
+ const t=$("msg").value.trim();if(!t&&!staged.length)return;
+ const files=staged.splice(0);$("msg").value="";$("msg").style.height="auto";drawAtt();
+ if(files.length){
+  if(t)add(esc(t),"msg u",true);
+  add(files.map(fchip).join(""),"ufiles",true);
+  neo(`<p>Got ${files.length>1?files.length+" files":"it"}. I'll process ${files.length>1?"them":"it"} in the background. Feel free to ask me anything meanwhile.</p>`);
+  files.forEach((f,i)=>setTimeout(()=>startJob(f),350*i));
+ }else{add(esc(t),"msg u",true);answer(t)}
+}
+function say(t){add(esc(t),"msg u",true);answer(t)}
+function uploadSamples(){
+ const fs=SAMPLES.map(s=>({name:s.file,size:s.size,sample:s}));
+ add("Upload the 3 sample invoices","msg u",true);add(fs.map(fchip).join(""),"ufiles",true);
+ neo(`<p>Processing all 3 in the background. They'll land in your <b>Need review</b> tab as they finish, so keep asking me things while you wait.</p>`);
+ fs.forEach((f,i)=>setTimeout(()=>startJob(f),450*i));
+}
+
+/* ---------- mock extraction (replace with real extraction response) ---------- */
+const SAMPLES=[
+ {file:"SLP-2026-0418 · Sri Lakshmi Packaging.pdf",size:"186 KB",vendor:"Sri Lakshmi Packaging Pvt Ltd",gstin:"29AABCS1429B1Z5",state:"Karnataka",no:"SLP/2026/0418",date:"05 Oct 2026",due:"04 Nov 2026",tax:"CGST+SGST",conf:96,
+  lines:[["HDPE container 5L",200,62],["PET bottle 1L",1500,6.4],["Printed labels",3000,0.85]],
+  checks:[["t","Vendor matched to an existing ledger"],["t","GSTIN valid and tax split matches the state"],["t","No duplicate found in the last 90 days"],["w","HSN missing on 1 line. I used 3923 (plastic containers)."]]},
+ {file:"KST-5531 · Kaveri Steel Traders.pdf",size:"241 KB",vendor:"Kaveri Steel Traders",gstin:"33AAACK7421M1ZB",state:"Tamil Nadu",no:"KST/5531",date:"03 Oct 2026",due:"18 Oct 2026",tax:"IGST",conf:88,
+  lines:[["MS angle 40x40",800,62.5],["MS flat 50x6",450,64]],
+  checks:[["t","GSTIN valid and IGST applied for inter-state supply"],["t","No duplicate found in the last 90 days"],["w","Vendor isn't in your ledgers yet. I'll create it as a new vendor on approval."]]},
+ {file:"INV-1182 · Dell India.pdf",size:"412 KB",vendor:"Dell India Pvt Ltd",gstin:"29AAACD0087K1ZP",state:"Karnataka",no:"INV-1182",date:"06 Oct 2026",due:"05 Nov 2026",tax:"CGST+SGST",conf:97,dup:true,total:88085.20,
+  lines:[["Laptops & accessories (PO 8841)",1,74648.47]],
+  checks:[["w","Looks like a duplicate. The same invoice number, vendor and amount were uploaded on 7 Oct, 9:01 am."],["t","Vendor matched to an existing ledger"]]}];
+let seq=0;
+function makeInv(f){
+ if(f.sample)return f.sample;
+ const dell=/dell|1182/i.test(f.name);
+ return dell?SAMPLES[2]:SAMPLES[(seq++)%2];
+}
+function calc(inv){const taxable=inv.lines.reduce((s,l)=>s+l[1]*l[2],0);
+ const total=inv.total||+(taxable*1.18).toFixed(2);return {taxable,tax:total-taxable,total}}
+
+/* ---------- background jobs ---------- */
+const jobs=[];let uid=0,batchDone=0;
+const STEPS=["Reading document","Extracting vendor, dates and amounts","Matching vendor in your ledgers","Validating GSTIN and tax split","Checking for duplicates"];
+const running=()=>jobs.filter(j=>j.state==="run");
+function updateBg(){const n=running().length;
+ $("bg").classList.toggle("on",n>0);$("bgt").textContent=`${n} file${n>1?"s":""} processing in the background`;
+ for(const id of ["topCnt","fabCnt"]){const b=$(id);b.textContent=n;b.classList.toggle("on",n>0)}}
+function removeRow(r){for(const a of [NEED,DUP,APP,PROC]){const i=a.indexOf(r);if(i>-1)a.splice(i,1)}}
+async function startJob(f){
+ const job={id:"u"+(++uid),f,state:"run",inv:makeInv(f)};
+ job.row={id:job.id,file:f.name,size:f.size,vendor:"Reading…",type:"—",amt:"",paise:"",status:"Processing…",src:"Neo Copilot",user:"You",date:nowStr(),ago:"just now"};
+ PROC.unshift(job.row);jobs.push(job);S.tab="review";S.page=1;S.q="";$("q").value="";freshId=job.id;render();
+ job.el=add(`<div class="pdf">PDF</div><div class="jm"><b>${esc(f.name)}</b><small>Queued…</small><div class="pbar"><i style="width:4%"></i></div></div>`,"job");
+ updateBg();
+ for(let i=0;i<STEPS.length;i++){
+  const pct=Math.round((i+1)/STEPS.length*100);
+  job.el.querySelector("small").textContent=STEPS[i]+"…";job.el.querySelector(".pbar i").style.width=(pct-12)+"%";
+  job.row.status=`Processing… ${Math.round(i/STEPS.length*100)}%`;render();
+  await sleep(750+Math.random()*700);
+  job.el.querySelector(".pbar i").style.width=pct+"%";
+ }
+ finish(job);
+}
+function finish(job){
+ const inv=job.inv,c=calc(inv),[rs,ps]=inr(c.total).split(".");
+ removeRow(job.row);
+ Object.assign(job.row,{vendor:inv.vendor,type:"Purchase",amt:rs,paise:ps,gst:inv.state+(inv.state==="Karnataka"?" HQ":""),ago:"just now"});
+ job.state=inv.dup?"dup":"ready";job.row.status=inv.dup?"Duplicate":"Needs Review";
+ (inv.dup?DUP:NEED).unshift(job.row);freshId=job.id;render();
+ job.card=document.createElement("div");job.card.className="card";job.card.onclick=e=>onCard(job,e);
+ const wrap=document.createElement("div");wrap.className="msg n";
+ wrap.innerHTML=`<p><b>${esc(job.f.name)}</b> ${inv.dup?"needs your attention.":"is ready for review."}</p>`;wrap.appendChild(job.card);
+ const n=near();
+ if(job.el.isConnected)job.el.replaceWith(wrap);else chat.appendChild(wrap);
+ if(n)chat.scrollTop=chat.scrollHeight;else $("jump").classList.add("on");
+ drawCard(job);updateBg();
+ batchDone++;
+ if(!running().length){
+  if(batchDone>1)summary();
+  batchDone=0;
+ }
+}
+function summary(){
+ const rd=jobs.filter(j=>j.state==="ready"),dp=jobs.filter(j=>j.state==="dup");
+ const m=neo(`<p>All files are processed: <b>${rd.length} ready to approve</b>${dp.length?`, <b>${dp.length} possible duplicate</b>`:""}.</p>`);
+ const opts=[];if(rd.length>1)opts.push([`Approve all ${rd.length} ready bills`,approveAll]);
+ if(dp.length)opts.push(["Show the duplicate",()=>{S.tab="duplicate";S.page=1;render();reply(`<p>I've opened the <b>Duplicate</b> tab for you.</p>`)}]);
+ if(opts.length)chips(opts);
+}
+function drawCard(job,edit=false,open=false){
+ const inv=job.inv,c=calc(inv),el=job.card,warn=inv.checks.filter(x=>x[0]==="w").length,ok=inv.checks.length-warn;
+ const taxRows=inv.tax==="IGST"?`<div><span>IGST 18%</span><span>₹${inr(c.tax)}</span></div>`:`<div><span>CGST 9%</span><span>₹${inr(c.tax/2)}</span></div><div><span>SGST 9%</span><span>₹${inr(c.tax/2)}</span></div>`;
+ const det=job.open||edit;
+ el.innerHTML=`<div class="card-h">Purchase bill · ${job.state==="approved"?"Posted":job.state==="gone"?"Discarded":"Draft"}<span class="sp"></span><span class="conf ${inv.dup||warn?"w":""}">${inv.conf}% confident</span></div>
+ <div class="card-b"><div class="vrow"><div>${edit?"":`<div class="vend">${esc(inv.vendor)}</div>`}<div class="sub">${edit?"":`${esc(inv.no)} · ${inv.date} · `}GSTIN ${inv.gstin}</div></div><div class="amt">₹${inr(c.total)}</div></div>
+ ${edit?`<div class="kv"><div style="grid-column:1/3"><label>Vendor</label><input id="e1" value="${esc(inv.vendor)}"></div><div><label>Invoice no.</label><input id="e2" value="${esc(inv.no)}"></div><div><label>Invoice date</label><input id="e3" value="${esc(inv.date)}"></div></div>`:""}
+ <div class="sum"><span class="t">✓ ${ok} passed</span>${warn?` · <span class="w">! ${warn} to review</span>`:""} · <button class="link" data-a="tog">${det?"Hide":"View"} details</button></div>
+ ${det?`<div class="more"><table class="lines"><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Amount</th></tr></thead><tbody>${inv.lines.map(l=>`<tr><td>${l[0]}</td><td class="r">${l[1]}</td><td class="r">${inr(l[2])}</td><td class="r">${inr(l[1]*l[2])}</td></tr>`).join("")}</tbody></table>
+ <div class="tot"><div><span>Taxable value</span><span>₹${inr(c.taxable)}</span></div>${taxRows}<div class="g"><span>Total</span><span>₹${inr(c.total)}</span></div></div>
+ <ul class="checks">${inv.checks.map(x=>`<li><span class="${x[0]}">${x[0]==="t"?"✓":"!"}</span>${x[1]}</li>`).join("")}</ul></div>`:""}</div>
+ ${actions(job,edit)}`;
+}
+function actions(job,edit){
+ if(job.state==="approved")return `<div class="okline">✓ Posted as Purchase voucher ${esc(job.inv.no)}</div>`;
+ if(job.state==="gone")return `<div class="okline wline">Discarded. Nothing was posted.</div>`;
+ if(job.state==="posting")return `<div class="acts"><span class="sub" style="padding:7px 2px">Posting…</span></div>`;
+ if(edit)return `<div class="acts"><button class="btn" data-a="save">Save changes</button><button class="btn ghost" data-a="cancel">Cancel</button></div>`;
+ if(job.state==="dup")return `<div class="acts"><button class="btn" data-a="no">Discard duplicate</button><button class="btn ghost" data-a="keep">Keep anyway</button></div>`;
+ return `<div class="acts"><button class="btn" data-a="ok">Approve &amp; post</button><button class="btn ghost" data-a="edit">Edit</button><button class="btn ghost" data-a="no">Discard</button></div>`;
+}
+async function onCard(job,e){const a=e.target.dataset.a;if(!a)return;
+ if(a==="tog"){job.open=!job.open;drawCard(job)}
+ if(a==="edit")drawCard(job,true);if(a==="cancel")drawCard(job);
+ if(a==="save"){job.inv=Object.assign({},job.inv,{vendor:$("e1").value||job.inv.vendor,no:$("e2").value||job.inv.no,date:$("e3").value||job.inv.date});job.row.vendor=job.inv.vendor;render();drawCard(job)}
+ if(a==="ok")await approve(job);
+ if(a==="keep"){removeRow(job.row);job.row.status="Needs Review";NEED.unshift(job.row);job.state="ready";job.inv=Object.assign({},job.inv,{dup:false});render();drawCard(job)}
+ if(a==="no"){removeRow(job.row);job.state="gone";render();drawCard(job)}
+}
+async function approve(job){if(job.state!=="ready")return;job.state="posting";drawCard(job);await sleep(800);
+ removeRow(job.row);job.row.status="Approved";APP.unshift(job.row);job.state="approved";freshId=job.id;render();drawCard(job)}
+async function approveAll(){const rd=jobs.filter(j=>j.state==="ready");
+ if(!rd.length)return reply(`<p>There's nothing ready to approve right now.</p>`);
+ add(`Approve all ready bills`,"msg u",true);
+ await Promise.all(rd.map(approve));
+ reply(`<p>Posted <b>${rd.length}</b> bill${rd.length>1?"s":""}. You'll find them in the <b>Approved</b> tab.</p>`,()=>{});
+}
+
+/* ---------- Neo flows: attention, duplicates, explain, vendor message ---------- */
+function ask(q,opts){neo(`<p>${q}</p>`);return new Promise(res=>chips(opts.map(([l,v])=>[l,()=>{add(esc(l),"msg u",true);res(v)}])))}
+const jobOf=r=>jobs.find(j=>j.row===r);
+const money=r=>r.amt?`₹${r.amt}.${r.paise}`:"—";
+const generic=r=>/^(Multiple|General counterparty)$/.test(r.vendor)||r.type==="—";
+const shortName=s=>s.length>34?s.slice(0,32)+"…":s;
+const hasWarn=j=>j.inv.checks.some(c=>c[0]==="w");
+const flagged=()=>[...new Set([...jobs.filter(j=>j.state==="dup"||hasWarn(j)).map(j=>j.row),...DUP,...NEED.filter(generic)])].slice(0,5);
+
+async function attention(){
+ const wait=NEED.length+PROC.length,blocked=NEED.filter(generic).length,dups=DUP.length;
+ const clear=jobs.filter(j=>j.state==="ready"&&!hasWarn(j));
+ if(!wait&&!dups)return reply(`<p>Nothing is waiting. The queue is clear.</p>`);
+ await reply(`<p>Here's what needs you right now:</p><ul><li><b>${wait}</b> documents waiting in this company's Inbox</li><li><b>${blocked}</b> blocked on missing details (no single vendor)</li><li><b>${dups}</b> that look like duplicates</li></ul>${clear.length?`<p>${clear.length} from this session ${clear.length>1?"are":"is"} clean and can be approved as is.</p>`:""}`);
+ const o=[];
+ if(clear.length)o.push([`Approve the ${clear.length} that are clear`,async()=>{add(`Approve the ${clear.length} that are clear`,"msg u",true);await Promise.all(clear.map(approve));reply(`<p>Posted <b>${clear.length}</b>. The rest still need a look.</p>`)}]);
+ if(dups)o.push(["Sort out duplicates",()=>say("Find duplicates")]);
+ o.push(["That's all",()=>reply(`<p>Okay. I'll be here if you need me.</p>`)]);
+ chips(o);
+}
+async function dupFlow(){
+ await reply(`<p>Checking vendor + invoice number against documents already received…</p>`);
+ if(!DUP.length)return neo(`<p><b>None found.</b> Nothing in your Inbox matches an earlier document.</p>`);
+ const rows=[...DUP];
+ const c=add(`<div class="card-h">Duplicates · ${rows.length} certain<span class="sp"></span></div><div class="card-b">${rows.map(r=>`<div class="vrow" style="margin-bottom:10px"><div><div class="vend" style="font-size:13px">${esc(shortName(r.file))}</div><div class="sub">${esc(r.vendor)} · ${r.date}</div></div><div style="text-align:right"><div class="amt" style="font-size:13px">${money(r)}</div><span class="st d">certain match</span></div></div>`).join("")}<div class="sub">Same vendor, invoice number and amount as a document already received.</div></div>
+ <div class="acts"><button class="btn" data-a="del">Delete ${rows.length} certain</button><button class="btn ghost" data-a="keep">Keep them</button></div>`,"card");
+ c.onclick=e=>{const a=e.target.dataset.a;if(!a)return;
+  c.querySelector(".acts").remove();
+  if(a==="del"){rows.forEach(r=>{removeRow(r);const j=jobOf(r);if(j){j.state="gone";drawCard(j)}});render();
+   add(`<span>✓</span>Deleted ${rows.length} duplicate${rows.length>1?"s":""}. The originals are untouched.`,"okline");}
+  else add(`Kept all ${rows.length}. They stay in the <b>Duplicate</b> tab.`,"msg n");};
+}
+async function explainFlow(pre){
+ let r=pre;
+ if(!r){const f=flagged();if(!f.length)return reply(`<p>Nothing is flagged right now.</p>`);
+  r=await ask("Which document?",f.map(x=>[shortName(x.file),x]));}
+ await reply(`<p>Reading <b>${esc(shortName(r.file))}</b>…</p>`);
+ const j=jobOf(r);let why=[],next=null;
+ if(j){why=j.inv.checks.filter(c=>c[0]==="w").map(c=>c[1]);if(j.state==="dup")next="dup";else if(why.some(w=>/isn't in your ledgers/.test(w)))next="gstin"}
+ else if(r.status==="Duplicate"){why=[`Same vendor, invoice number and amount as a document already received (${esc(r.vendor)}, ${money(r)}). Posting it again would double the expense.`];next="dup"}
+ else if(generic(r))why=[`There's no single vendor on this one, so I used the general ledger. Check it before approving.`];
+ const c=add(`<div class="card-h">Why this is flagged<span class="sp"></span></div><div class="card-b"><div class="vrow"><div><div class="vend" style="font-size:13px">${esc(shortName(r.file))}</div><div class="sub">${esc(r.vendor)}</div></div><div class="amt" style="font-size:13px">${money(r)}</div></div>
+ ${why.length?`<ul class="checks">${why.map(w=>`<li><span class="w">!</span>${w}</li>`).join("")}</ul>`:`<div class="sum"><span class="t">✓</span> Nothing is stopping it. It can be approved as it is.</div>`}</div>`,"card");
+ if(next==="gstin")chips([["Ask the vendor for their GSTIN",()=>{add("Ask the vendor for their GSTIN","msg u",true);vendorFlow(r,"GSTIN")}],["Leave it",()=>{}]]);
+ if(next==="dup")chips([["Sort out duplicates",()=>say("Find duplicates")],["Leave it",()=>{}]]);
+}
+const VMSG={
+ "GSTIN":(v,n,a)=>`Hi ${v} team,\n\nWe're booking your invoice ${n} for ${a}, but we don't have your GSTIN on file. Could you please share it so we can record the purchase and claim input tax credit?\n\nThanks,\nAccounts, Shakunthalam Oil & Refineries`,
+ "a clearer copy of the bill":(v,n,a)=>`Hi ${v} team,\n\nThe copy of invoice ${n} (${a}) we received is hard to read. Could you please send a clearer scan or the original PDF?\n\nThanks,\nAccounts, Shakunthalam Oil & Refineries`,
+ "the tax invoice":(v,n,a)=>`Hi ${v} team,\n\nWe received a proforma for ${n} (${a}). Could you please send the final tax invoice so we can book it?\n\nThanks,\nAccounts, Shakunthalam Oil & Refineries`,
+ "a credit note":(v,n,a)=>`Hi ${v} team,\n\nThe amount on invoice ${n} differs from what we agreed (${a} billed). Could you please issue a credit note for the difference?\n\nThanks,\nAccounts, Shakunthalam Oil & Refineries`};
+async function vendorFlow(pre,what){
+ let r=pre;
+ if(!r){const open=[...new Set([...jobs.map(j=>j.row),...NEED,...DUP])].filter(x=>!generic(x)&&x.status!=="Approved");const seen=new Set(),pick=[];
+  for(const x of open){if(!seen.has(x.vendor)){seen.add(x.vendor);pick.push(x)}if(pick.length>=5)break}
+  if(!pick.length)return reply(`<p>Nothing open to message a vendor about. Upload a bill first.</p>`);
+  r=await ask("Which bill is this about?",pick.map(x=>[`${shortName(x.vendor)} · ${money(x)}`,x]));}
+ if(!what)what=await ask(`What do you need from ${esc(r.vendor)}?`,[["Their GSTIN","GSTIN"],["A clearer copy of the bill","a clearer copy of the bill"],["The tax invoice, not the proforma","the tax invoice"],["A credit note for the difference","a credit note"]]);
+ await reply(`<p>Drafting a message to <b>${esc(r.vendor)}</b>…</p>`);
+ const j=jobOf(r),no=j?j.inv.no:r.file.replace(/\.pdf$/i,"").split(/[·—]/).pop().trim();
+ const text=VMSG[what](r.vendor,no,money(r));
+ const noContact=j&&j.inv.vendor==="Kaveri Steel Traders";
+ const to=noContact?null:`accounts@${r.vendor.toLowerCase().replace(/[^a-z ]/g,"").split(" ")[0]}.in`;
+ const c=add(`<div class="card-h">Drafted, not sent<span class="sp"></span></div><div class="card-b"><div class="sub" style="margin:0 0 8px">${to?`To: ${to} · via Email`:`No email or WhatsApp on file`}</div><div style="white-space:pre-wrap;font-size:13px;line-height:1.5;background:#fafbfd;border:1px solid var(--border);border-radius:10px;padding:10px 12px">${esc(text)}</div>
+ ${to?"":`<div class="sum"><span class="w">!</span> ${esc(r.vendor)} has no email or WhatsApp in the vendor master, so send it from your own phone. Add their contact so I can send the next one.</div>`}</div>
+ <div class="acts"><button class="btn ghost" data-a="copy">Copy the text</button>${to?`<button class="btn" data-a="send">Simulate send</button>`:""}<button class="btn ghost" data-a="no">Don't send</button></div>`,"card");
+ c.onclick=async e=>{const a=e.target.dataset.a;if(!a)return;
+  if(a==="copy"){let ok=true;try{await navigator.clipboard.writeText(text)}catch{ok=false}
+   e.target.textContent=ok?"Copied ✓":"Select the text and copy it manually";return}
+  c.querySelector(".acts").remove();
+  if(a==="send")add(`<span>✓</span>Sent to ${to}. This is simulated in this prototype, so nothing actually left the page. Logged against ${esc(shortName(r.file))}.`,"okline");
+  else add(`Not sent. The draft stays here if you want it later.`,"msg n");};
+}
+
+/* ---------- chat answers from live state ---------- */
+function answer(text){
+ const t=text.toLowerCase(),run=running(),rd=jobs.filter(j=>j.state==="ready"),ap=jobs.filter(j=>j.state==="approved"),dp=jobs.filter(j=>j.state==="dup"),done=[...rd,...ap,...dp];
+ const startChips=()=>chips([["Try with 3 sample invoices",uploadSamples],["Attach files",()=>$("file").click()]]);
+ if(/approve|post/.test(t)&&/all|ready|every/.test(t))return approveAll();
+ if(/attention|waiting|blocked|queue|needs me|need my/.test(t))return attention();
+ if(/duplicate|dupes/.test(t))return dupFlow();
+ if(/explain|why.*(flag|block)|flagged/.test(t))return explainFlow();
+ if(/(message|email|mail|whatsapp|draft).*(vendor|supplier)|(vendor|supplier).*(message|email|mail|whatsapp)|draft/.test(t))return vendorFlow();
+ if(/status|progress|done|finish|processing|how many|where|update|ready/.test(t)){
+  if(!jobs.length)return reply(`<p>You haven't uploaded anything in this session yet. Attach invoices with <b>＋</b> or try the samples.</p>`,startChips);
+  return reply(`<p>Here's where things stand:</p><ul>${run.length?`<li><b>${run.length}</b> still processing${run[0]?` (now: ${esc(run[0].f.name)})`:""}</li>`:""}<li><b>${rd.length}</b> ready to approve</li><li><b>${ap.length}</b> approved</li>${dp.length?`<li><b>${dp.length}</b> possible duplicate</li>`:""}</ul>`,
+   ()=>{if(rd.length>1)chips([[`Approve all ${rd.length} ready bills`,approveAll]])});}
+ if(/total|amount|sum|worth|value|how much/.test(t)){
+  if(!done.length)return reply(`<p>I don't have any processed bills to total yet.</p>`);
+  const tot=done.filter(j=>j.state!=="dup").reduce((s,j)=>s+calc(j.inv).total,0);
+  return reply(`<p>Across the ${done.filter(j=>j.state!=="dup").length} valid bill${done.length>1?"s":""} processed so far, the total is <b>₹${inr(tot)}</b>${dp.length?` (excluding ${dp.length} duplicate)`:""}.</p>`);}
+ if(/gst|tax|hsn|gstin/.test(t))
+  return reply(`<p>For each bill I validate the GSTIN, check that the tax split fits the supply (CGST+SGST for same-state, IGST for inter-state), and flag missing HSN codes. Anything I'm unsure about shows up as a warning on the card.</p>`);
+ if(/what can|help|do with|capab/.test(t))
+  return reply(`<p>For billing files I can:</p><ul><li>Read invoices and bills (PDF, JPG, PNG)</li><li>Extract vendor, dates, line items and taxes</li><li>Match vendors and validate GST</li><li>Catch duplicates and clear them out</li><li>Tell you what in the queue needs you</li><li>Explain why a document is flagged</li><li>Draft a message to a vendor for a GSTIN or a clearer copy</li><li>Post approved bills for you</li></ul><p>Processing runs in the background, so you can upload several files and keep chatting.</p>`,startChips);
+ if(/file|type|format|support|size|limit/.test(t))
+  return reply(`<p>I accept <b>PDF, JPG and PNG</b> up to <b>10 MB</b> each. You can attach several files in one message.</p>`);
+ if(/upload|attach|add|invoice|bill|sample/.test(t))
+  return reply(`<p>Sure. Use <b>＋</b> below, drag files into this panel, or start with samples.</p>`,startChips);
+ if(/^(hi|hello|hey)\b/.test(t))
+  return reply(`<p>Hi 👋 Ready when you are. Attach some invoices and I'll get started.</p>`,startChips);
+ return reply(`<p>I'm focused on <b>billing file uploads</b> in this beta. I can process invoices, tell you what's pending, or explain my checks.</p>`,startChips);
+}
+render();
+</script></body></html>
